@@ -18,6 +18,8 @@ public class Article {
 
 	// 등록 날짜
 	String cdate;
+	
+	String udate;
 
 	
 	public String getArticleId() {
@@ -68,10 +70,26 @@ public class Article {
 		this.cdate = cdate;
 	}
 
+	public String getUdate() {
+		return udate;
+	}
+
+	public void setUdate(String udate) {
+		this.udate = udate;
+	}
+	/**
+	 * \n를 <br/> 로 바꾼다.
+	 */
+	public String getContentHtml() {
+		if (content != null)
+			return content.replace("\n", "<br/>");
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		return "Article [articleId=" + articleId + ", title=" + title
 				+ ", content=" + content + ", userId=" + userId + ", name="
-				+ name + ", cdate=" + cdate + "]\n";
+				+ name + ", cdate=" + cdate + ", udate =" + udate + "]\n";
 	}
 }

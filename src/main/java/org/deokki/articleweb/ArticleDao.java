@@ -2,29 +2,77 @@ package org.deokki.articleweb;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
-public interface ArticleDao {
+@Repository
+public class ArticleDao {
 
-	/**
-	 * 리스트
-	 */
-	List<Article> selectAll(int offset, int count);
+	static final String LIST_ARTICLES = "select articleId, title, userId, name, left(cdate,16) cdate from article order by articleId desc limit ?,?";
+
+	static final String COUNT_ARTICLES = "select count(articleId) from article";
+
+	static final String GET_ARTICLE = "select articleId, title, content, userId, name, left(cdate,16) cdate, udate from article where articleId=?";
+
+	static final String ADD_ARTICLE = "insert article(title,content,userId,name) values(?,?,?,?)";
+
+	static final String UPDATE_ARTICLE = "UPDATE article SET title=?, content=? WHERE articleId=?";
+
+	static final String DELETE_ARTICLE = "DELETE FROM article WHERE articleId=?";
 	
-	/**
-	 * 등록 수
-	 */
-	int countAll();
+@Autowired
+JdbcTemplate jdbcTemplate;
 
-	/**
-	 * 조회
-	 */
-	Article getArticle(String articleId);
-	
-	/**
-	 * 
-	 * 
-	 * 등록하기
-	 */
-	void addArticle(Article article);
+RowMapper<Article> articleRowMapper = new BeanPropertyRowMapper<>(
+		Article.class);
 
+/**
+ * 글목록
+ */
+public List<Article> listArticles(int offset, int count) {
+	return jdbcTemplate.query(LIST_ARTICLES, articleRowMapper, offset,
+			count);
+}
+
+/**
+ * 글 목록 건수
+ */
+public int getArticlesCount() {
+	return jdbcTemplate.queryForObject(COUNT_ARTICLES, Integer.class);
+}
+
+/**
+ * 글조회
+ */
+public Article getArticle(String articleId) {
+	return jdbcTemplate.queryForObject(GET_ARTICLE, articleRowMapper,
+			articleId);
+}
+
+/**
+ * 글등록
+ */
+public int addArticle(Article article) {
+	return jdbcTemplate.update(ADD_ARTICLE, article.getTitle(),
+			article.getContent(), article.getUserId(), article.getName());
+}
+
+/**
+ * 글 수정
+ */
+ public int updateArticle(Article article) {
+	 return jdbcTemplate.update(UPDATE_ARTICLE, article.getTitle(),
+			 article.getContent(), article.getArticleId());
+ }
+ /**
+  * 글 삭제 
+  *
+  */
+ 
+ public int deleteArticle(String articleId) {
+	 return jdbcTemplate.update(DELETE_ARTICLE, articleId);
+ }
 }

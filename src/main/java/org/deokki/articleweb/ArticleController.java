@@ -2,62 +2,114 @@ package org.deokki.articleweb;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.servlet.http.HttpSession;
+
+import org.deokki.book.chap11.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @Controller
 public class ArticleController {
-
 	@Autowired
 	ArticleDao articleDao;
 
-	static final Logger logger = LogManager.getLogger();
-
-	
-	@RequestMapping("/register/write")
-	public String handleStep1() {
-		return "register/write";
-	}
-
-
-	@PostMapping("/register/check")
-	public String addArticle(Article article) {
-			article.setName("박덕기");
-			article.setUserId("2015041002");
-			articleDao.addArticle(article);
-			logger.debug("글이 등록되었습니다. {}", article);
-			return "register/check";
-	}
-	
-	@GetMapping("/register/view")
-    public void view(@RequestParam("articleId") String articleId, Model model) {
-        Article article = articleDao.getArticle(articleId);
-        model.addAttribute("article", article);
-	}
-
-	@GetMapping("/articles")
-	public String articles(
+	/**
+	 * 글 목록
+	 */
+	@GetMapping("/article/list")
+	public void articleList(
 			@RequestParam(value = "page", defaultValue = "1") int page,
 			Model model) {
 
-		//페이지 당 가져오는 행의 수
+		// 페이지당 행의 수와 페이지의 시작점
 		final int COUNT = 100;
-		//시작점
 		int offset = (page - 1) * COUNT;
 
-		List<Article> articleList = articleDao.selectAll(offset, COUNT);
-
-		int totalCount = articleDao.countAll();
-
+		List<Article> articleList = articleDao.listArticles(offset, COUNT);
+		int totalCount = articleDao.getArticlesCount();
 		model.addAttribute("totalCount", totalCount);
-		model.addAttribute("articles", articleList);
-		return "articles";
+		model.addAttribute("articleList", articleList);
 	}
+
+	/**
+	 * 글 보기
+	 */
+	@GetMapping("/article/view")
+	public void articleView(@RequestParam("articleId") String articleId,
+			Model model) {
+		Article article = articleDao.getArticle(articleId);
+		model.addAttribute("article", article);
+	}
+
+
+	/**
+	 * 글 등록
+	 */
+	@PostMapping("/article/add")
+	public String articleAdd(Article article,HttpSession session,
+			@SessionAttribute("MEMBER") Member member) {
+	
+		article.setUserId(member.getMemberId());
+		article.setName(member.getName());
+		articleDao.addArticle(article);
+		return "redirect:/app/article/list";
+}
+	
+	/**
+	 * 글 수정
+	 */
+	@GetMapping("/article/updateForm")
+	public String updateArticle(@RequestParam("articleId") String articleId,
+			Model model,
+			HttpSession session,
+			@SessionAttribute("MEMBER") Member member){
+			
+			Article article = articleDao.getArticle(articleId);
+			if(!member.getMemberId().equals(article.getUserId()))
+				return "redirect:/app/article/view?articleId="+articleId;
+			
+			model.addAttribute("article",article);
+			return "article/updateForm";
+	}
+		
+		
+	
+	
+	@PostMapping("/article/update")
+	public String updateArticle(Article article,HttpSession session,
+			@SessionAttribute("MEMBER") Member member) {
+		
+		article.setArticleId(article.articleId);
+		articleDao.updateArticle(article);
+		return "redirect:/app/article/list";
+	}
+	
+	/**
+	 * 글 삭제
+	 */
+	@GetMapping("/article/deleteForm")
+	public String deleteArticle(Article article,HttpSession session,
+			@RequestParam("articleId") String articleId,
+			@SessionAttribute("MEMBER") Member member) {
+		
+		article = articleDao.getArticle(articleId);
+		if(!member.getMemberId().equals(article.getUserId()))
+			return "redirect:/app/article/view?articleId="+articleId;
+		
+		articleDao.deleteArticle(articleId);
+		return "redirect:/app/article/list";
+	}
+	/*@PostMapping("/article/delete")
+	public String deleteArticle(Article article,HttpSession session,
+			@SessionAttribute("MEMBER") Member member) {
+		
+		article.setArticleId(article.articleId);
+		articleDao.deleteArticle(article);
+		return "redirect:/app/article/list";
+	}*/
 }
