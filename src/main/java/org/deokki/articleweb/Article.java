@@ -8,6 +8,10 @@ public class Article {
 	String userId;
 	String name;
 	String cdate;
+<<<<<<< HEAD
+=======
+	
+>>>>>>> 41c6b33146056297b4fbba4c059b31a684646fe7
 	String udate;
 
 	public String getArticleId() {
@@ -65,7 +69,10 @@ public class Article {
 	public void setUdate(String udate) {
 		this.udate = udate;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 41c6b33146056297b4fbba4c059b31a684646fe7
 	/**
 	 * \n를 <br/> 로 바꾼다.
 	 */
@@ -79,7 +86,11 @@ public class Article {
 	public String toString() {
 		return "\nArticle [articleId=" + articleId + ", title=" + title
 				+ ", content=" + content + ", userId=" + userId + ", name="
+<<<<<<< HEAD
 				+ name + ", cdate=" + cdate + ", udate=" + udate + "]";
+=======
+				+ name + ", cdate=" + cdate + ", udate =" + udate + "]\n";
+>>>>>>> 41c6b33146056297b4fbba4c059b31a684646fe7
 	}
 
 }
