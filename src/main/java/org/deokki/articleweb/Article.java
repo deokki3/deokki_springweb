@@ -1,25 +1,15 @@
 package org.deokki.articleweb;
 
 public class Article {
-	// 글 번호
+
 	String articleId;
-
-	// 제목
 	String title;
-
-	// 내용
 	String content;
-
-	// 학번
 	String userId;
-
-	// 이름
 	String name;
-
-	// 등록 날짜
 	String cdate;
+	String udate;
 
-	
 	public String getArticleId() {
 		return articleId;
 	}
@@ -68,10 +58,28 @@ public class Article {
 		this.cdate = cdate;
 	}
 
+	public String getUdate() {
+		return udate;
+	}
+
+	public void setUdate(String udate) {
+		this.udate = udate;
+	}
+
+	/**
+	 * \n를 <br/> 로 바꾼다.
+	 */
+	public String getContentHtml() {
+		if (content != null)
+			return content.replace("\n", "<br/>");
+		return null;
+	}
+
 	@Override
 	public String toString() {
-		return "Article [articleId=" + articleId + ", title=" + title
+		return "\nArticle [articleId=" + articleId + ", title=" + title
 				+ ", content=" + content + ", userId=" + userId + ", name="
-				+ name + ", cdate=" + cdate + "]\n";
+				+ name + ", cdate=" + cdate + ", udate=" + udate + "]";
 	}
+
 }
