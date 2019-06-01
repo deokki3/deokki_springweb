@@ -1,4 +1,4 @@
-package org.deokki.articleweb;
+package org.deokki.article;
 
 public class Article {
 
@@ -8,10 +8,7 @@ public class Article {
 	String userId;
 	String name;
 	String cdate;
-<<<<<<< HEAD
-=======
-	
->>>>>>> 41c6b33146056297b4fbba4c059b31a684646fe7
+
 	String udate;
 
 	public String getArticleId() {
