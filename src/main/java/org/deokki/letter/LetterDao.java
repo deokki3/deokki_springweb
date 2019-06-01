@@ -11,58 +11,79 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LetterDao {
 	
-	static final String ADD_LETER = "INSERT letter(title,content,senderId,senderName,receiverId,receiverName) VALUES(?,?,?,?,?,?)";
-	
-	static final String LIST_RECEIVER = "SELECT letterId,title,senderId,senderName,cdate FROM letter WHERE receiverId=?";
-	
-	static final String LIST_SENDER = "SELECT letterId,title,receiverId,receiverName,cdate FROM letter WHERE senderId=?";
-	
-	static final String GET_LETTER = "SELECT letterId,title,content,senderId,senderName,receiverId,receiverName,cdate from letter" 
-														+ "	where letterId=? and(senderId= ? or receiverId=?)";
-	static final String DELETE_LETTER = "DELETE FROM Letter WHERE letterId=? and (senderId=? or receiverId=?)";
+	static final String LIST_LETTERS_RECEIVED = "select letterId,title,senderId,senderName,left(cdate,19) cdate from letter where receiverId=? order by letterId desc limit ?,?";
+	static final String LIST_LETTERS_SENT = "select letterId,title,receiverId,receiverName,left(cdate,19) cdate from letter where senderId=? order by letterId desc limit ?,?";
+
+	static final String COUNT_LETTERS_RECEIVED = "select count(letterId) from letter where receiverId=?";
+	static final String COUNT_LETTERS_SENT = "select count(letterId) from letter where senderId=?";
+
+	static final String GET_LETTER = "select letterId,title,content,senderId,senderName,receiverId,receiverName,left(cdate,19) cdate from letter where letterId=? and (senderId=? or receiverId=?)";
+	static final String ADD_LETTER = "insert letter(title,content,senderId,senderName,receiverId,receiverName) values(?,?,?,?,?,?)";
+	static final String DELETE_LETTER = "delete from letter where letterId=? and (senderId=? or receiverId=?)";
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	
-	
+
 	RowMapper<Letter> letterRowMapper = new BeanPropertyRowMapper<>(
 			Letter.class);
-	
-	
+
+	/**
+	 * 받은 목록
+	 */
+	public List<Letter> listLettersReceived(String receiverId, int offset,
+			int count) {
+		return jdbcTemplate.query(LIST_LETTERS_RECEIVED, letterRowMapper,
+				receiverId, offset, count);
+	}
+
 	/**
 	 * 보낸 목록
 	 */
-	 public List<Letter> listSender(String senderId){
-		 return jdbcTemplate.query(LIST_SENDER, letterRowMapper, senderId);
-		 
-	 }
-	 
-	 /**
-	  * 받은 목록
-	  */
-	 public List<Letter> listReceiver(String receiverId) {
-		 return jdbcTemplate.query(LIST_RECEIVER, letterRowMapper, receiverId);
-	 }
-	 
-	 /**
-	  * 편지 조회
-	  */
-	 public Letter getLetter(String letterId,String memberId) {
-		 return jdbcTemplate.queryForObject(GET_LETTER, letterRowMapper, letterId, memberId, memberId);
-	 }
-	 /**
-	  * 편지 등록
-	  */
-	 public int addLetter(Letter letter) {
-		 return jdbcTemplate.update(ADD_LETER, letter.getTitle(),letter.getContent(),letter.getSenderId(),
-				 letter.getSenderName(),letter.getReceiverId(),letter.getReceiverName());
-	 }
-	 /**
-	  * 편지 삭제
-	  */
-	 
-	 public int deleteLetter(String letterId,String memberId) {
-		 return jdbcTemplate.update(DELETE_LETTER, letterId, memberId, memberId);
-	 }
+	public List<Letter> listLettersSent(String senderId, int offset,
+			int count) {
+		return jdbcTemplate.query(LIST_LETTERS_SENT, letterRowMapper, senderId,
+				offset, count);
+	}
+
+	/**
+	 * 받은 편지 갯수
+	 */
+	public int countLettersReceived(String receiverId) {
+		return jdbcTemplate.queryForObject(COUNT_LETTERS_RECEIVED,
+				Integer.class, receiverId);
+	}
+
+	/**
+	 * 보낸 편지 갯수
+	 */
+	public int countLettersSent(String senderId) {
+		return jdbcTemplate.queryForObject(COUNT_LETTERS_SENT, Integer.class,
+				senderId);
+	}
+
+	/**
+	 * 조회
+	 */
+	public Letter getLetter(String letterId, String memberId) {
+		return jdbcTemplate.queryForObject(GET_LETTER, letterRowMapper,
+				letterId, memberId, memberId);
+	}
+
+	/**
+	 * 추가
+	 */
+	public int addLetter(Letter letter) {
+		return jdbcTemplate.update(ADD_LETTER, letter.getTitle(),
+				letter.getContent(), letter.getSenderId(),
+				letter.getSenderName(), letter.getReceiverId(),
+				letter.getReceiverName());
+	}
+
+	/**
+	 * 삭제
+	 */
+	public int deleteLetter(String letterId, String memberId) {
+		return jdbcTemplate.update(DELETE_LETTER, letterId, memberId, memberId);
+	}
 
 }

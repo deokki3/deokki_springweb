@@ -10,7 +10,6 @@ public class Letter {
 	String title;
 	String content;
 	String cdate;
-	String udate;
 	public String getLetterId() {
 		return letterId;
 	}
@@ -59,17 +58,12 @@ public class Letter {
 	public void setCdate(String cdate) {
 		this.cdate = cdate;
 	}
-	public String getUdate() {
-		return udate;
-	}
-	public void setUdate(String udate) {
-		this.udate = udate;
-	}
+
 	@Override
 	public String toString() {
 		return "Letter [letterId=" + letterId + ", senderId=" + senderId + ", senderName=" + senderName
 				+ ", receiverId=" + receiverId + ", receiverName=" + receiverName + ", title=" + title + ", content="
-				+ content + ", cdate=" + cdate + ", udate=" + udate + "]";
+				+ content + ", cdate=" + cdate + "]";
 	}
 	
 
