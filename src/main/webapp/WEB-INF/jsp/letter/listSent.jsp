@@ -23,9 +23,6 @@ th {
 <body>
 	<%@ include file="/WEB-INF/jsp/header.jsp"%>
 	<h2>보낸 목록</h2>
-	<p>
-		<a href="./app/letter/addForm">편지쓰기</a>
-	</p>
 	<p>전체 ${totalCount }건</p>
 	<form action="./app/letter/listSent">
 		<input type="number" name="page" value="${param.page }" placeholder="페이지"
